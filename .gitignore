@@ -1,0 +1,6 @@
+*.glade~
+*.o
+*.gch
+*.swp
+/build
+
