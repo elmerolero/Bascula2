@@ -1,17 +1,18 @@
 CC=g++
-LINKER_FLAGS= `pkg-config --cflags --libs gtk+-3.0 sqlite3`
+CFLAGS= `pkg-config --cflags gtk+-3.0 sqlite3`
+LIBS=	`pkg-config --libs gtk+-3.0 sqlite3`
 
 ../build/aplicacion:  main.cpp Aplicacion.o Widget.o Usuario.o Empresa.o Domicilio.o Database.o Utilidades.o
-	$(CC) main.cpp $(LINKER_FLAGS) -g -o ../build/aplicacion Aplicacion.o Widget.o Usuario.o Empresa.o Domicilio.o Database.o Utilidades.o Vistas.o Ticket.o Funciones.o
+	$(CC) $(CFLAGS) -o ../build/aplicacion main.cpp Aplicacion.o Widget.o Usuario.o Empresa.o Domicilio.o Database.o Utilidades.o Vistas.o Ticket.o Funciones.o $(LIBS)
 
 Aplicacion.o:	Aplicacion.cpp Utilidades.o Usuario.o Vistas.o Ticket.o Funciones.o
-	$(CC) $(LINKER_FLAGS) -c Aplicacion.cpp 
+	$(CC) -c Aplicacion.cpp $(LINKER_FLAGS)
 
 Widget.o:	Widget.cpp
-	$(CC) $(LINKER_FLAGS) -c Widget.cpp
+	$(CC) -c Widget.cpp $(LINKER_FLAGS)
 
 Usuario.o:	Usuario.cpp
-	$(CC) $(LINKER_FLAGS) -c Usuario.cpp
+	$(CC) -c Usuario.cpp $(LINKER_FLAGS)
 
 Empresa.o:	Empresa.cpp
 	$(CC) -c Empresa.cpp
@@ -20,17 +21,16 @@ Domicilio.o:	Domicilio.cpp
 	$(CC) -c Domicilio.cpp
 
 Database.o:	Database.cpp Utilidades.o
-	$(CC) $(LINKER_FLAGS) -c Database.cpp
+	$(CC) -c Database.cpp $(LINKER_FLAGS)
 
 Vistas.o: Vistas.cpp Funciones.o Utilidades.o
-	$(CC) $(LINKER_FLAGS) -c Vistas.cpp
+	$(CC) -c Vistas.cpp $(LINKER_FLAGS)
 
 Utilidades.o:	Utilidades.cpp
-	$(CC) $(LINKER_FLAGS) -c Utilidades.cpp
+	$(CC) -c Utilidades.cpp $(LINKER_FLAGS)
 
 Ticket.o: Ticket.cpp
-	$(CC) $(LINKER_FLAGS) -c Ticket.cpp
+	$(CC) -c Ticket.cpp $(LINKER_FLAGS)
 
 Funciones.o: Funciones.cpp
-	$(CC) $(LINKER_FLAGS) -c Funciones.cpp
-
+	$(CC) -c Funciones.cpp $(LINKER_FLAGS)
