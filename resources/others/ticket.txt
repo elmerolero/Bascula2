@@ -1,0 +1,22 @@
+------------------------------------
+            C A A B S A
+------------------------------------
+      * PLANTA TRANSFERENCIA *
+FECHA: 2020-08-17     FOLIO: 0000025
+CONSECUTIVO:     1
+
+ECONÓMICO NO:    KSJFHS
+PLACAS:          DSFJLAD
+TIPO DE CAJA:    Volteo
+CONDUCTOR:       ISMAEL SALAS LOPEZ
+PROCEDENCIA:     PARTICULAR
+
+HORA DE ENTRADA: 19:52:54
+HORA DE SALIDA:  19:53:07
+
+PESO BRUTO:      23909
+PESO TARA:       1234
+------------------------------------
+PESO NETO:       22675
+------------------------------------
+DEPARTAMENTO:  3-Cementerios

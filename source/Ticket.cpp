@@ -1,6 +1,8 @@
 #include "Ticket.h"
+#include <iostream>
 #include <stdexcept>
 #include <cmath>
+#include <iomanip>
 using namespace std;
 
 // Establece el folio del ticket
@@ -257,4 +259,88 @@ void Ticket::establecerPesoNeto( double pesoNeto )
 double Ticket::obtenerPesoNeto() const
 {
 	return pesoNeto;
+}
+
+// Establece la fecha de registro
+void Ticket::establecerFecha( string fechaRegistro )
+{
+	if( fechaRegistro.size() > 10 ){
+		throw invalid_argument( "Se ha intentado establecer una fecha no adecuada." );
+	}
+
+	this -> fechaRegistro = fechaRegistro;
+}
+
+// Obtiene la fecha de registro
+std::string Ticket::obtenerFecha() const
+{
+	return fechaRegistro;
+}
+
+// Permite establecer la hora de entrada
+void Ticket::establecerHoraEntrada( std::string horaEntrada )
+{
+	if( horaEntrada.size() > 8 ){
+		throw invalid_argument( "Se ha intentado establecer una hora no válida." );
+	}
+
+	this -> horaEntrada = horaEntrada;
+}
+
+// Obtiene la hora de entrada
+std::string Ticket::obtenerHoraEntrada() const
+{
+	return horaEntrada;
+}
+
+// Establece la hora de salida
+void Ticket::establecerHoraSalida( std::string horaSalida )
+{
+	if( horaSalida.size() > 8 ){
+		throw invalid_argument( "Se ha intentado establecer una hora no válida." );
+	}
+
+	this -> horaSalida = horaSalida;
+}
+
+
+// Obtiene la hora de salida
+std::string Ticket::obtenerHoraSalida() const
+{
+	return horaSalida;
+}
+
+// Establece si está pendiente
+void Ticket::establecerPendiente( bool pendiente )
+{
+	this -> pendiente = pendiente;
+}
+
+// Indica si está pendiente o no el ticket
+bool Ticket::estaPendiente() const
+{
+	return pendiente;
+}
+
+// Imprime los datos del ticket
+void Ticket::imprimir() const
+{
+	cout << "Información del ticket con folio " << setfill( '0' ) << setw( 6 ) << obtenerFolio() << endl
+		 << "No. económico: " << obtenerNumeroEconomico() << endl
+		 << "Placas: " << obtenerNumeroPlacas() << endl
+		 << "Tipo de caja: " << setw( 2 ) << obtenerClaveTipoCaja() << "-" << obtenerNombreTipoCaja() << endl
+		 << "Conductor: " << obtenerNombreConductor() << endl
+		 << "Procedencia: " << setw( 2 ) << obtenerClaveProcedencia() << "-" << obtenerNombreProcedencia() << endl
+		 << "Zona: " << obtenerZona() << endl
+		 << "Subzona: " << obtenerSubzona() << endl
+		 << "Departamento: " << setw( 2 ) << obtenerClaveDepartamento() << "-" << obtenerNombreDepartamento() << endl
+		 << "Peso bruto: " << fixed << obtenerPesoBruto() << endl;
+
+	// Si no esta pendiente
+	if( !estaPendiente() ){
+		cout << "Peso tara: " << obtenerPesoTara() << endl;
+		cout << "Peso neto: " << obtenerPesoNeto() << endl;
+	}
+
+	cout << endl;
 }

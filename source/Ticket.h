@@ -2,11 +2,10 @@
 #define TICKET_H
 #include <string>
 
-struct TicketPendiente
+struct Registro
 {
-	int folio;
-	double pesoBruto;
-	std::string numeroEconomico;
+	int clave;
+	std::string nombre;
 };
 
 class Ticket
@@ -68,6 +67,25 @@ class Ticket
 		// Peso neto
 		void calcularPesoNeto();
 		double obtenerPesoNeto() const;
+
+		// El ticket se encuentra pendiente (verdad) o finalizado
+		void establecerPendiente( bool pendiente );
+		bool estaPendiente() const;
+
+		// Permite establece la fecha de registro del ticket
+		void establecerFecha( std::string fecha );
+		std::string obtenerFecha() const;
+
+		// Permite  establecer la hora de entrada
+		void establecerHoraEntrada( std::string horaEntrada );
+		std::string obtenerHoraEntrada() const;
+
+		// Permite establecer la hora de salida
+		void establecerHoraSalida( std::string horaSalida );
+		std::string obtenerHoraSalida() const;
+
+		// Imprime los datos del ticket
+		void imprimir() const;
 	
 	private:
 		// Permite establecer el peso neto usando calcularPesoNeto
@@ -88,6 +106,10 @@ class Ticket
 		double pesoBruto;
 		double pesoTara;
 		double pesoNeto;
+		std::string fechaRegistro;
+		std::string horaEntrada;
+		std::string horaSalida;
+		bool pendiente;
 };
 
 #endif

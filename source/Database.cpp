@@ -32,6 +32,7 @@ void Database::query( std::string query, int( * callback )( void *, int, char **
 	queryReset();
 	int status = sqlite3_exec( database, query.c_str(), callback, nullptr, &errorMessage );
 	if( status != SQLITE_OK ){
+		cout << errorMessage << endl;
 		throw runtime_error( "Error querying." );
 	}
 }

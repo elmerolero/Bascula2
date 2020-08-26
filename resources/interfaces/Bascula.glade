@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.36.0 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkImage" id="ImagenCierre">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">../images/icons/CierreCaja.png</property>
+    <property name="pixbuf">..\images\icons\CierreCaja.png</property>
   </object>
   <object class="GtkImage" id="ImagenNuevo">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">../images/icons/Nuevo.png</property>
+    <property name="pixbuf">..\images\icons\Nuevo.png</property>
   </object>
   <object class="GtkImage" id="ImagenRegresar">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">../images/icons/Regresar.png</property>
+    <property name="pixbuf">..\images\icons\Regresar.png</property>
   </object>
   <object class="GtkGrid" id="Contenido">
     <property name="visible">True</property>
@@ -71,6 +71,30 @@
                     <property name="can_focus">False</property>
                     <property name="valign">start</property>
                     <property name="hexpand">True</property>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
                     <child>
                       <placeholder/>
                     </child>
@@ -179,7 +203,7 @@
                     <property name="valign">center</property>
                     <property name="max_length">10</property>
                     <property name="width_chars">30</property>
-                    <property name="placeholder_text" translatable="yes">No. Económico</property>
+                    <property name="placeholder_text" translatable="yes">Placas</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -224,9 +248,8 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="halign">start</property>
-        <property name="margin_bottom">15</property>
-        <property name="hexpand">True</property>
-        <property name="label" translatable="yes">Nombre de la Empresa S. A. de C. V.</property>
+        <property name="margin_bottom">10</property>
+        <property name="label" translatable="yes">Caabsa Eagle S. A. de C. V.</property>
         <attributes>
           <attribute name="font-desc" value="Sans Bold 12"/>
         </attributes>

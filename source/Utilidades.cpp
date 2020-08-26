@@ -26,7 +26,7 @@ int databaseCallback( void * noUsado, int numeroColumnas, char **campos, char **
 	// Elemento a insertar
 	Row *row = new Row();
 	
-	
+	// Agrega los campos y los nombres de las columnas
 	for( unsigned int i = 0; i < numeroColumnas; ++i ){
 		if( campos[ i ] != NULL ){
 			row -> campos.push_back( campos[ i ] );
@@ -35,6 +35,7 @@ int databaseCallback( void * noUsado, int numeroColumnas, char **campos, char **
 			string campoVacio = "";
 			row -> campos.push_back( campoVacio );
 		}
+		row -> columnas.push_back( nombreColumnas[ i ] );
 	}
 	
 	// Incrementa el número de resultados
@@ -63,6 +64,16 @@ int obtenerEntero( string str )
 	return numero;
 }
 
+// Quitar coma
+string quitarComa( string str )
+{
+	size_t posicionComa = str.find( ',', 0 );
+	if( posicionComa != string::npos ){
+		str.replace( posicionComa, 1, "." );
+	}
+
+	return str;
+}
 
 void insert_text_handler( GtkEditable *editable, const gchar *text, gint length, gint *position, gpointer data )
 {

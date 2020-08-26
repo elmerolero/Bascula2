@@ -4,7 +4,10 @@
 #include <gtk/gtk.h>
 
 void vistaControlBasculista( GtkWidget *widget, gpointer ptr );
-void vistaRegistroEmpresa( GtkWidget *widget, gpointer ptr );
+void vistaRegistros( GtkWidget *widget, gpointer ptr );
+void vistaConsultarProcedencias( GtkWidget *widget, gpointer ptr );
+void vistaConsultarDepartamentos( GtkWidget *widget, gpointer ptr );
+void vistaConsultarTiposCaja( GtkWidget *widget, gpointer ptr );
 void vistaBascula( GtkWidget *widget, gpointer ptr );
 void vistaNuevoTicket( GtkWidget *widget, gpointer ptr );
 void vistaRegistrarPlacas( GtkWidget *widget, gpointer ptr );

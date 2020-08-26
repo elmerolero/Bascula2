@@ -7,6 +7,10 @@
 #include <string>
 #include <chrono>
 #include <thread>
+#include <iomanip>
+#include <fstream>
+#include <cstdlib>
+#include <Windows.h>
 using namespace std;
 
 void registrarTicket( GtkWidget *widget, gpointer ptr )
@@ -25,27 +29,21 @@ void registrarTicket( GtkWidget *widget, gpointer ptr )
     
     contenido -> establecerTextoEtiqueta( "EstadoLectura", "Grabando..." );
     
-    cout << "Datos registrados" << endl
-	     << "Folio: " << ticket -> obtenerFolio() << endl
-	     << "Placas: " << ticket -> obtenerNumeroPlacas() << endl
-		 << "Tipo de caja: " << ticket -> obtenerNombreTipoCaja() << endl
-		 << "Nombre del conductor: " << ticket -> obtenerNombreConductor() << endl
-		 << "Nombre de la empresa: " << ticket -> obtenerNombreProcedencia() << endl
-		 << "Departamento: " << ticket -> obtenerNombreDepartamento() << endl
-		 << "Zona: " << ticket -> obtenerZona() << endl
-		 << "Subzona: " << ticket -> obtenerSubzona() << endl
-		 << "Peso bruto: " << ticket -> obtenerPesoBruto() << endl;
+   	// Imprimir ticket
 		 
 	try{
-		string consulta = "insert into tickets values( null, \'" + ticket -> obtenerNumeroEconomico() + "\', " + "\'" + ticket -> obtenerNumeroPlacas() + "\', " +
-						  to_string( ticket -> obtenerClaveTipoCaja() ) + ", " + "\'" + ticket -> obtenerNombreConductor() + "\', " + to_string( ticket -> obtenerClaveProcedencia() ) + ", " +
-						  "\'" + ticket -> obtenerZona() + "\', " + "\'" + ticket -> obtenerSubzona() + "\', " + to_string( ticket -> obtenerClaveDepartamento() ) + ", " +
-						  "date( \'now\', \'localtime\' ), time( \'now\', \'localtime\' ), null, " + to_string( ticket -> obtenerPesoBruto() ) + ", null, null, 1 );";
+		string pesoBruto = quitarComa( to_string( ticket -> obtenerPesoBruto() ) );
+
+		string consulta = "insert into tickets values( null, '" + ticket -> obtenerNumeroEconomico() + "', " + "'" + ticket -> obtenerNumeroPlacas() + "', " +
+						  to_string( ticket -> obtenerClaveTipoCaja() ) + ", " + "'" + ticket -> obtenerNombreConductor() + "', " + to_string( ticket -> obtenerClaveProcedencia() ) + ", " +
+						  "'" + ticket -> obtenerZona() + "', " + "'" + ticket -> obtenerSubzona() + "', " + to_string( ticket -> obtenerClaveDepartamento() ) + ", " +
+						  "date( 'now', 'localtime' ), time( 'now', 'localtime' ), null, " + pesoBruto + ", null, null, 1 );";
 						  
+		cout << consulta << endl;
 		database.query( consulta, NULL );
 		
 		// Muestra el mensaje de que el usuario fue creado exitosamente
-        Widget *widget = new Widget( "../resources/interfaces/RegistroTicket/MensajeInformacion.glade" );
+        Widget *widget = new Widget( "resources/interfaces/RegistroTicket/MensajeInformacion.glade" );
         widget -> ocultarElemento( "Elemento" );
 		widget -> establecerTextoEtiqueta( "EntradaElemento", "Ticket registrado correctamente." );
         widget -> conectarSenal( "BotonAceptar", "clicked", G_CALLBACK( gtk_window_close ), widget );		
@@ -153,7 +151,7 @@ void registrarTipoCaja( GtkWidget *widget, gpointer ptr )
 			contenido -> establecerTextoEtiqueta( "EntradaCaja", ticket -> obtenerNombreTipoCaja() );
 			
 			// Muestra el mensaje de que el usuario fue creado exitosamente
-			Widget *widget = new Widget( "../resources/interfaces/RegistroTicket/MensajeInformacion.glade" );
+			Widget *widget = new Widget( "resources/interfaces/RegistroTicket/MensajeInformacion.glade" );
 			widget -> establecerTextoEtiqueta( "Elemento", "Tipo de caja: " );
 			widget -> establecerTextoEtiqueta( "EntradaElemento", ticket -> obtenerNombreTipoCaja() );
 			widget -> conectarSenal( "BotonAceptar", "clicked", G_CALLBACK( gtk_window_close ), widget );
@@ -237,7 +235,7 @@ void registrarProcedencia( GtkWidget *widget, gpointer ptr )
 			// Valida y establece la procedencia
 			ticket -> establecerNombreProcedencia( procedencia );
 			
-			Widget *widget = new Widget( "../resources/interfaces/RegistroTicket/MensajeInformacion.glade" );
+			Widget *widget = new Widget( "resources/interfaces/RegistroTicket/MensajeInformacion.glade" );
 			widget -> establecerTextoEtiqueta( "Elemento", "Lugar de procedencia: " );
 			widget -> establecerTextoEtiqueta( "EntradaElemento", ticket -> obtenerNombreProcedencia() );
 			widget -> conectarSenal( "BotonAceptar", "clicked", G_CALLBACK( gtk_window_close ), widget );
@@ -261,19 +259,16 @@ void registrarProcedencia( GtkWidget *widget, gpointer ptr )
 					break;
 			}
 		}
-		else{
-			contenido -> ocultarElemento( "IndicadorDependencia" );
+		else{			
 			contenido -> establecerTextoEtiqueta( "MensajeError", "Introduce un código de dependencia\nexistente." );
 			contenido -> mostrarElemento( "MensajeError" );
 		}
 	}
 	catch( invalid_argument &ia ){
-		contenido -> ocultarElemento( "IndicadorDependencia" );
 		contenido -> establecerTextoEtiqueta( "MensajeError",ia.what() );
 		contenido -> mostrarElemento( "MensajeError" );
 	}
 	catch( runtime_error &re ){
-		contenido -> ocultarElemento( "IndicadorDependencia" );
 		contenido -> establecerTextoEtiqueta( "MensajeError", "Dependencia no encontrada." );
 		contenido -> mostrarElemento( "MensajeError" );
 	}
@@ -309,7 +304,7 @@ void registrarClaveDepartamento( GtkWidget *widget, gpointer ptr )
 			ticket -> establecerNombreDepartamento( nombreDepartamento );
             
             // Crea la ventana en la que muestra el nombre del departamento
-            Widget *widget = new Widget( "../resources/interfaces/RegistroTicket/MensajeInformacion.glade" );
+            Widget *widget = new Widget( "resources/interfaces/RegistroTicket/MensajeInformacion.glade" );
 			widget -> establecerTextoEtiqueta( "Elemento", "Departamento: " );
 			widget -> establecerTextoEtiqueta( "EntradaElemento", ticket -> obtenerNombreDepartamento() );
 			widget -> conectarSenal( "BotonAceptar", "clicked", G_CALLBACK( gtk_window_close ), widget );
@@ -471,15 +466,20 @@ void registrarPesoTara( GtkWidget *widget, gpointer ptr )
 		ticket -> calcularPesoNeto();
 		
 		// Realiza la inserción
-		string consulta = "update tickets set hora_salida = time( \'now\', \'localtime\' ), peso_tara = " + to_string( ticket -> obtenerPesoTara() ) + ", peso_neto = " + to_string( ticket -> obtenerPesoNeto() ) + ", pendiente = 0 where folio = " + to_string( ticket -> obtenerFolio() ) + " limit 1;";
+		string consulta = "update tickets set hora_salida = time( \'now\', \'localtime\' ), peso_tara = " + quitarComa( to_string( ticket -> obtenerPesoTara() ) ) + ", " +
+						  "peso_neto = " + quitarComa( to_string( ticket -> obtenerPesoNeto() ) ) + ", pendiente = 0 where folio = " + to_string( ticket -> obtenerFolio() ) + ";";
+						
+		// Realiza la consulta
 		database.query( consulta, NULL );
 		
 		// Crea la ventana en la que muestra el nombre del departamento
-        Widget *widget = new Widget( "../resources/interfaces/RegistroTicket/MensajeInformacion.glade" );
+        Widget *widget = new Widget( "resources/interfaces/RegistroTicket/MensajeInformacion.glade" );
 		widget -> ocultarElemento( "Elemento" );
 		widget -> establecerTextoEtiqueta( "EntradaElemento", "Registro completo.\nImprimiento..." );
 		widget -> conectarSenal( "BotonAceptar", "clicked", G_CALLBACK( gtk_window_close ), widget );
 		vistaControlBasculista( nullptr, aplicacion );
+
+		imprimirTicket( ticket );
 	}
 	catch( invalid_argument &ia ){
 		cerr << ia.what() << endl;
@@ -489,7 +489,207 @@ void registrarPesoTara( GtkWidget *widget, gpointer ptr )
 	}
 }
 
-void hola( GtkWidget *widget, gpointer ptr )
+void imprimirTicket( Ticket *ticket )
 {
-	cout << "Hola" << endl;
+	// Obtine la hora de salida registrada en la base de datos
+	string consulta = "select fecha, hora_entrada, hora_salida from tickets where folio = " + to_string( ticket -> obtenerFolio() ) + ";";
+	database.query( consulta, databaseCallback );
+	if( results > 0 ){
+		ticket -> establecerFecha( rows.at( 0 ) -> campos.at( 0 ) );
+		ticket -> establecerHoraEntrada( rows.at( 0 ) -> campos.at( 1 ) );
+		ticket -> establecerHoraSalida( rows.at( 0 ) -> campos.at( 2 ) );
+	}
+
+	// Stream para construir el ticket
+	stringstream str;
+
+	str << "------------------------------------" << endl
+		<< "            C A A B S A" 			  << endl
+	    << "------------------------------------" << endl
+	    << "      * PLANTA TRANSFERENCIA *" 	  << endl
+	    << "FECHA: " << ticket -> obtenerFecha() << "     FOLIO: " << setfill( '0' ) << setw( 7 ) << ticket -> obtenerFolio() << endl
+	    << "CONSECUTIVO:     " << 1 << endl << endl
+	    << "ECONÓMICO NO:    " << ticket -> obtenerNumeroEconomico() << endl 
+	    << "PLACAS:          " << ticket -> obtenerNumeroPlacas() << endl
+	    << "TIPO DE CAJA:    " << ticket -> obtenerNombreTipoCaja() << endl
+	    << "CONDUCTOR:       " << ticket -> obtenerNombreConductor() << endl
+	    << "PROCEDENCIA:     " << ticket -> obtenerNombreProcedencia() << endl << endl
+	    << "HORA DE ENTRADA: " << ticket -> obtenerHoraEntrada() << endl
+	    << "HORA DE SALIDA:  " << ticket -> obtenerHoraSalida() << endl << endl
+	    << "PESO BRUTO:      " << ticket -> obtenerPesoBruto() << endl
+	    << "PESO TARA:       " << ticket -> obtenerPesoTara() << endl
+	    << "------------------------------------" << endl
+	    << "PESO NETO:       " << ticket -> obtenerPesoNeto() << endl
+	    << "------------------------------------" << endl << setfill( ' ' );
+	
+	if( ticket -> obtenerClaveProcedencia() == 1 ){
+	    str << "ZONA:    " << ticket -> obtenerZona() << endl
+	    	<< "SUBZONA: " << ticket -> obtenerSubzona() << endl;
+	}
+	else{
+	   	str  << "DEPARTAMENTO: " << setw( 2 ) << ticket -> obtenerClaveDepartamento() << "-" << ticket -> obtenerNombreDepartamento() << endl;
+	}
+
+	// Abre el archivo y lo carga
+	ofstream archivoSalida;
+
+	archivoSalida.open( "resources/others/ticket.txt", ios_base::out );
+	if( !archivoSalida ){
+		throw runtime_error( "Ocurrió un error al abrir el archivo temporal." );
+	}
+
+	// Envía el contenido del stream al archivo
+	archivoSalida << str.str();
+
+	// Cierra el archivo
+	archivoSalida.close();
+
+	// Imprime el archivo creado
+	system( "notepad /p resources/others/ticket.txt" );
+}
+
+void imprimirReporte( std::string fecha )
+{
+	string consulta = "select count( folio ), sum( peso_neto ), time( 'now', 'localtime' ) from tickets where fecha = '" + fecha + "';";
+	database.query( consulta, databaseCallback );
+	if( rows.size() > 0 ){
+		int totalTickets = obtenerEntero( rows.at( 0 ) -> campos.at( 0 ) );
+		int totalKg = obtenerEntero( rows.at( 0 ) -> campos.at( 1 ) );
+		std::string hora = rows.at( 0 ) -> campos.at( 2 );
+
+		// Obtiene las procedencias
+		std::vector< Row > procedencias;
+		consulta = "select * from procedencias;";
+		database.query( consulta, databaseCallback );
+		if( rows.size() > 0 ){
+			for( Row *row : rows ){
+				Row procedencia;
+				for( string campo : row -> campos ){
+					procedencia.campos.push_back( campo );
+				}
+				procedencias.push_back( procedencia );
+			}
+		}
+
+		consulta = "select clave_procedencia, count( folio ), sum( peso_neto ) from tickets join procedencias on tickets.codigo_empresa = procedencias.clave_procedencia where fecha = '" + fecha + "' group by codigo_empresa;";
+		database.query( consulta, databaseCallback );
+		// Construye el formato del ticket
+		stringstream str;
+		str << "--------------------------------------------" << endl
+	    	<< "                 C A A B S A" << endl
+        	<< "               REPORTE GENERAL" << endl
+			<< "--------------------------------------------" << endl
+			<< "         * PLANTA TRANSFERENCIA *" << endl << endl
+			<< "FECHA: " << setw(10) << fecha << "            " << "HORA: " << setw( 8 ) << hora << endl << endl;
+			for( Row procedencia : procedencias ){
+				double kilogramos = 0;
+				int tickets = 0;
+				for( Row *row : rows ){
+					if( procedencia.campos.at( 0 ) == row -> campos.at( 0 ) ){
+						kilogramos = stod( row -> campos.at( 2 ) );
+						tickets = obtenerEntero( row -> campos.at( 1 ) );
+						break;
+					}
+				}
+				str << setw( 22 ) << procedencia.campos.at( 1 ) << ": " << setw( 7 ) << kilogramos << " Kg "
+					<< setw( 3 ) << tickets << " Tick." << endl;
+			}
+		str	<< "--------------------------------------------\n"
+			<< "TOTAL:                  " << setw( 7 ) << totalKg << "Kg " << setw( 3 ) << totalTickets << " TICK." << endl
+			<< "-------------------------------------------\n";
+
+		// Abre el archivo y lo carga
+		ofstream archivoSalida;
+
+		archivoSalida.open( "resources/others/report.txt", ios_base::out );
+		if( !archivoSalida ){
+			throw runtime_error( "Ocurrió un error al abrir el archivo temporal." );
+		}
+
+		// Envía el contenido del stream al archivo
+		archivoSalida << str.str();
+
+		// Cierra el archivo
+		archivoSalida.close();
+
+		system( "notepad /p resources/others/report.txt" );
+	}
+}
+
+void generarReporte( GtkWidget *widget, gpointer ptr )
+{
+	Widget * ventana = static_cast< Widget * >(ptr);
+	stringstream consulta;
+	unsigned int aaaa, mm, dd;
+	GObject *calendario = ventana -> obtenerObjeto( "EntradaFecha" );
+	gtk_calendar_get_date( GTK_CALENDAR( calendario ), &aaaa, &mm, &dd );
+	stringstream fecha;
+	fecha << setfill( '0' ) << setw(4) << aaaa << "-"  << setw(2) << (mm + 1) << "-" << setw( 2 ) << dd << setfill(' ');
+
+	consulta << "select folio as 'FOLIO'," << endl
+	 	     << "numero_economico as 'NUMERO ECONOMICO'," << endl
+        	 << "numero_placa as 'PLACA'," << endl
+        	 << "nombre_tipo as 'TIPO DE CAJA'," << endl
+        	 << "nombre_conductor as 'CONDUCTOR'," << endl
+        	 << "procedencias.nombre_procedencia as 'EMPRESA'," << endl
+        	 << "zona as 'ZONA'," << endl
+        	 << "subzona as 'SUBZONA'," << endl
+         	 << "nombre_departamento as 'DEPARTAMENTO'," << endl
+        	 << "fecha as 'FECHA'," << endl
+        	 << "hora_entrada as 'HORA DE ENTRADA'," << endl
+        	 << "hora_salida as 'HORA DE SALIDA'," << endl
+        	 << "peso_bruto as 'PESO BRUTO'," << endl
+        	 << "peso_tara as 'PESO TARA'," << endl
+        	 << "peso_neto as 'PESO NETO' " << endl
+        	 << "from tickets " << endl
+        	 << "join procedencias on procedencias.clave_procedencia = tickets.codigo_empresa " << endl
+        	 << "join departamentos on departamentos.clave_departamento = tickets.codigo_departamento " << endl
+        	 << "join tipos_caja on tipos_caja.clave_tipo = tipo_caja " << endl
+        	 << "where fecha = '" << fecha.str() << "';";
+ 
+    database.query( consulta.str(), databaseCallback );
+    if( rows.size() > 0 ){
+    	stringstream str;
+    	str 	<< "\"" << rows.at(0) -> columnas.at( 0 ) << "\",\"" << rows.at(0) -> columnas.at( 1 ) << "\",\"" << rows.at(0) -> columnas.at( 2 ) << "\",\"" << rows.at( 0 ) -> columnas.at( 3 )
+    		<< "\",\"" << rows.at(0) -> columnas.at( 4 ) << "\",\"" << rows.at(0) -> columnas.at( 5 ) << "\",\"" << rows.at(0) -> columnas.at( 6 ) << "\",\"" << rows.at(0) -> columnas.at( 7 )
+    		<< "\",\"" << rows.at(0) -> columnas.at( 8 ) << "\"," << rows.at(0) -> columnas.at( 9 ) << "\",\"" << rows.at(0) -> columnas.at( 10 ) << "\",\"" << rows.at(0) -> columnas.at( 11 )
+    		<< "\",\"" << rows.at(0) -> columnas.at( 12 ) << "\",\"" << rows.at(0) -> columnas.at( 13 ) << "\",\"" << rows.at(0) -> columnas.at( 14 ) << "\"" << endl;
+
+   		for( Row * row : rows ){
+   			str << row -> campos.at( 0 ) << "," << row -> campos.at( 1 ) << "," << row -> campos.at( 2 ) << ",\"" << row -> campos.at( 3 )
+    		<< "\",\"" << row -> campos.at( 4 ) << "\",\"" << row -> campos.at( 5 ) << "\",\"" << row -> campos.at( 6 ) << "\",\"" << row -> campos.at( 7 )
+    		<< "\",\"" << row -> campos.at( 8 ) << "\",\"" << row -> campos.at( 9 ) << "\",\"" << row -> campos.at( 10 ) << "\",\"" << row -> campos.at( 11 )
+    		<< "\"," << row -> campos.at( 12 ) << "," << row -> campos.at( 13 ) << "," << row -> campos.at( 14 ) << endl;
+   		}
+
+   		try{
+   			// Abre el archivo y lo carga
+			ofstream archivoSalida;
+			string nombreReporte = "resources\\reports\\Corte del dia.csv";
+			archivoSalida.open( nombreReporte, ios_base::out );
+			if( !archivoSalida ){
+				throw runtime_error( "Ocurrió un error al abrir el archivo temporal." );
+			}
+
+			// Envía el contenido del stream al archivo
+			archivoSalida << str.str();
+
+			// Cierra el archivo
+			archivoSalida.close();
+
+			imprimirReporte( fecha.str() );
+
+			Widget mensaje( "resources/interfaces/RegistroExitoso.glade" );
+    		mensaje.establecerIconoVentana( "RegistroExitoso", "resources/images/icons/logo.png");
+    		mensaje.establecerTextoEtiqueta( "Mensaje", "Reporte generado\nespere unos momentos." );
+    		mensaje.conectarSenal( "BotonAceptar", "clicked", G_CALLBACK( gtk_window_close ), nullptr );
+			ShellExecute(NULL, "open", nombreReporte.c_str(), NULL, NULL, SW_HIDE );
+    	}
+    	catch( runtime_error &e ){
+    		Widget mensaje( "resources/interfaces/RegistroExitoso.glade" );
+    		mensaje.establecerIconoVentana( "RegistroExitoso", "resources/images/icons/logo.png");
+    		mensaje.establecerTextoEtiqueta( "Mensaje", "Error al obtener el reporte\nasegúrese de que no esté siendo usado\npor otro programa." );
+    		mensaje.conectarSenal( "BotonAceptar", "clicked", G_CALLBACK( gtk_window_close ), nullptr );
+    	}
+    }
 }

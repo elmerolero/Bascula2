@@ -20,25 +20,45 @@ class Aplicacion
         void establecerVistaContenido( std::string archivo );
         Widget *obtenerVistaContenido() const;
         
-        void actualizarTicketsPendientes();
-        void limpiarTicketsPendientes();
-        const std::vector< TicketPendiente * > &obtenerTicketsPendientes() const;
-                
+        // Ticket
         void establecerFolioTicketActual();
         Ticket *obtenerTicket();
         void cerrar();
-        
+
+        // Registro de tickets pendientes
+        void actualizarTicketsPendientes();
+        const std::vector< Ticket* > &obtenerTicketsPendientes() const;
+        void limpiarTicketsPendientes();
+                
+        // Registro de procedencias
+        void actualizarRegistrosProcedencias();
+        const std::vector< Registro * > &obtenerRegistrosProcedencias() const;
+        void limpiarRegistrosProcedencias();
+
+        // Registro de departamentos
+        void actualizarRegistrosDepartamentos();
+        const std::vector< Registro * > &obtenerRegistrosDepartamentos() const;
+        void limpiarRegistrosDepartamentos();
+
+        // Registro de departamentos
+        void actualizarRegistrosTiposCaja();
+        const std::vector< Registro * > &obtenerRegistrosTiposCaja() const;
+        void limpiarRegistrosTiposCaja();
 
     private:
         Usuario usuario;
         Empresa empresa;
         std::string fecha;
-        std::vector< TicketPendiente * >ticketsPendientes;
+        std::vector< Ticket * >ticketsPendientes;
+        std::vector< Registro * >registrosProcedencias;
+        std::vector< Registro * >registrosDepartamentos;
+        std::vector< Registro * >registrosTiposCaja;
         Ticket ticket;
 
         Widget *ventana;
         Widget *contenido;
         bool validarCadena( std::string cadena, std::regex expresion, size_t tamano );
+        void limpiarRegistros( std::vector< Registro * > &registros );
 };
 
 #endif

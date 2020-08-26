@@ -3,6 +3,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <regex>
+#include <cstdlib>
 #include "Utilidades.h"
 #include "Vistas.h"
 #include "Aplicacion.h"
@@ -20,10 +21,11 @@ int Aplicacion::iniciar()
 {
     try{
         // Conecta con la base de datos
-        database.connect( "../resources/databases/database.db" );
+        database.connect( "resources\\databases\\database.db" );
         
         // Carga la ventana principal y conecta la función para cerrar la ventana y finalizar el programa
-        ventana = new Widget( "../resources/interfaces/Principal.glade" );
+        ventana = new Widget( "resources/interfaces/Principal.glade" );
+        ventana -> establecerIconoVentana( "VentanaPrincipal", "resources\\images\\icons\\logo.png" );
         ventana -> conectarSenal( "VentanaPrincipal", "destroy", G_CALLBACK( gtk_main_quit ), nullptr );
         
         // Carga el widget de contenido
@@ -34,7 +36,7 @@ int Aplicacion::iniciar()
     }
     catch( runtime_error &excepcion ){
         cerr << excepcion.what() << endl;
-        return 1;
+        exit( 1 );
     }
 
     return 0;
@@ -78,7 +80,7 @@ std::string Aplicacion::obtenerFecha() const
 void Aplicacion::establecerFolioTicketActual()
 {
     try{
-        string consulta = "select max( folio ) from tickets"   ;
+        string consulta = "select max( folio ) from tickets";
         database.query( consulta, databaseCallback );
         if( results > 0 ){
             int folio = obtenerEntero( rows.at( 0 ) -> campos[ 0 ] );
@@ -106,13 +108,13 @@ Ticket *Aplicacion::obtenerTicket()
 void Aplicacion::limpiarTicketsPendientes()
 {
     // Para cada elemento del vector
-    for( TicketPendiente *elemento : ticketsPendientes ){
+    for( Ticket *elemento : ticketsPendientes ){
         // Elimina el elemento
         delete elemento;
     }
     
     // Limpia el vector
-    ticketsPendientes.clear(); 
+    ticketsPendientes.clear();
 }
 
 void Aplicacion::actualizarTicketsPendientes()
@@ -122,21 +124,38 @@ void Aplicacion::actualizarTicketsPendientes()
     
     // Intenta
     try{
-        string consulta = "select folio, numero_economico , peso_bruto from tickets where pendiente = 1";
+        // Consulta para obtener los tickets pendientes
+        string consulta = "select folio, numero_economico, numero_placa, clave_tipo, nombre_tipo, nombre_conductor, clave_procedencia, "
+                          "nombre_procedencia, zona, subzona, departamentos.clave_departamento, departamentos.nombre_departamento, peso_bruto from tickets join procedencias "
+                          "on tickets.codigo_empresa = procedencias.clave_procedencia join tipos_caja on tickets.tipo_caja = "
+                          "tipos_caja.clave_tipo join departamentos on tickets.codigo_departamento = departamentos.clave_departamento where pendiente = 1";
+        
+        //Realiza la consulta
         database.query( consulta, databaseCallback );
         if( results > 0 ){
-            // Para cada uno de los renglones
-            for( Row *row : rows ){
-                // Crea el ticket
-                TicketPendiente *pendiente = new TicketPendiente();
+            // Para cada uno de los tickets
+            for( Row * row : rows ){
+                // Apuntador a ticket
+                Ticket *ticket = new Ticket();
+
+                // Establecemos sus características
+                ticket -> establecerFolio( obtenerEntero( row -> campos.at( 0 ) ) );
+                ticket -> establecerNumeroEconomico( row -> campos.at( 1 ) );
+                ticket -> establecerNumeroPlacas( row -> campos.at( 2 ) );
+                ticket -> establecerClaveTipoCaja( obtenerEntero( row -> campos.at( 3 ) ) );
+                ticket -> establecerNombreTipoCaja( row -> campos.at( 4 ) );
+                ticket -> establecerNombreConductor( row-> campos.at( 5 ) );
+                ticket -> establecerClaveProcedencia( obtenerEntero( row -> campos.at( 6 ) ) );
+                ticket -> establecerNombreProcedencia( row -> campos.at( 7 ) );
+                ticket -> establecerZona( row -> campos.at( 8 ) );
+                ticket -> establecerSubzona( row -> campos.at( 9 ) );
+                ticket -> establecerClaveDepartamento( obtenerEntero( row -> campos.at( 10 ) ) );
+                ticket -> establecerNombreDepartamento( row -> campos.at( 11 ) );
+                ticket -> establecerPesoBruto( stod( row -> campos.at( 12 ) ) );
+                ticket -> establecerPendiente( true );
                 
-                // Establece su contenido
-                pendiente -> folio = obtenerEntero( row -> campos[ 0 ] );
-                pendiente -> numeroEconomico = row -> campos[ 1 ];
-                pendiente -> pesoBruto = stod( row -> campos[ 2 ] );
-                
-                // Lo añade en los tickets pendientes
-                ticketsPendientes.push_back( pendiente );
+                // Lo agregamos a tickets pendientes
+                ticketsPendientes.push_back( ticket );
             }
         }
     }
@@ -145,7 +164,146 @@ void Aplicacion::actualizarTicketsPendientes()
     }
 }
 
-const vector< TicketPendiente * >& Aplicacion::obtenerTicketsPendientes() const
+const vector< Ticket* >& Aplicacion::obtenerTicketsPendientes() const
 {
     return ticketsPendientes;
+}
+
+void Aplicacion::actualizarRegistrosProcedencias()
+{
+    // Limpia los registros de las procedencias
+    limpiarRegistrosProcedencias();
+
+    try{
+        // Obtiene los registros de las procedencias
+        string consulta = "select clave_procedencia, nombre_procedencia from procedencias;";
+        database.query( consulta, databaseCallback );
+        if( results > 0 ){
+            // Obtiene el registro de los resultados
+            for( Row *row : rows ){
+                // Crea un nuevo registro
+                Registro *registro = new Registro;
+
+                // Establece los datos del nuevo registro
+                registro -> clave = obtenerEntero( row -> campos.at( 0 ) );
+                registro -> nombre = row -> campos.at( 1 );
+
+                // Lo añade al arreglo de registros
+                if( registro -> clave != 0 ){
+                    registrosProcedencias.push_back( registro );
+                }
+            }
+        } 
+    }
+    catch( runtime_error &e ){
+        cerr << e.what() << endl;
+    }
+}
+
+const vector< Registro * > &Aplicacion::obtenerRegistrosProcedencias() const
+{
+    return registrosProcedencias;
+}
+
+void Aplicacion::limpiarRegistrosProcedencias()
+{
+    limpiarRegistros( registrosProcedencias );
+}
+
+void Aplicacion::actualizarRegistrosDepartamentos()
+{
+    // Limpia los registros de las procedencias
+    limpiarRegistrosProcedencias();
+
+    try{
+        // Obtiene los registros de las procedencias
+        string consulta = "select clave_departamento, nombre_departamento from departamentos;";
+        database.query( consulta, databaseCallback );
+        if( results > 0 ){
+            // Obtiene el registro de los resultados
+            for( Row *row : rows ){
+                // Crea un nuevo registro
+                Registro *registro = new Registro;
+
+                // Establece los datos del nuevo registro
+                registro -> clave = obtenerEntero( row -> campos.at( 0 ) );
+                registro -> nombre = row -> campos.at( 1 );
+
+                // Lo añade al arreglo de registros
+                if( registro -> clave != 0 ){
+                    registrosDepartamentos.push_back( registro );
+                }else{
+                    delete registro;
+                }
+            }
+        } 
+    }
+    catch( runtime_error &e ){
+        cerr << e.what() << endl;
+    }
+}
+
+const vector< Registro * > &Aplicacion::obtenerRegistrosDepartamentos() const
+{
+    return registrosDepartamentos;
+}
+
+void Aplicacion::limpiarRegistrosDepartamentos()
+{
+    limpiarRegistros( registrosDepartamentos );
+}
+
+void Aplicacion::actualizarRegistrosTiposCaja()
+{
+    // Limpia los registros de las procedencias
+    limpiarRegistrosTiposCaja();
+
+    try{
+        // Obtiene los registros de las procedencias
+        string consulta = "select clave_tipo, nombre_tipo from tipos_caja;";
+        database.query( consulta, databaseCallback );
+        if( results > 0 ){
+            // Obtiene el registro de los resultados
+            for( Row *row : rows ){
+                // Crea un nuevo registro
+                Registro *registro = new Registro;
+
+                // Establece los datos del nuevo registro
+                registro -> clave = obtenerEntero( row -> campos.at( 0 ) );
+                registro -> nombre = row -> campos.at( 1 );
+
+                // Lo añade al arreglo de registros
+                if( registro -> clave != 0 ){
+                    registrosTiposCaja.push_back( registro );
+                }else{
+                    delete registro;
+                }
+            }
+        } 
+    }
+    catch( runtime_error &e ){
+        cerr << e.what() << endl;
+    }
+}
+
+const vector< Registro * > &Aplicacion::obtenerRegistrosTiposCaja() const
+{
+    return registrosTiposCaja;
+}
+
+void Aplicacion::limpiarRegistrosTiposCaja()
+{
+    limpiarRegistros( registrosTiposCaja );
+}
+
+void Aplicacion::limpiarRegistros( vector< Registro * > &registros )
+{
+    // Para cada elemento del vector
+    for( Registro *elemento : registros ){
+        // Elimina el elemento
+        delete elemento;
+    }
+    
+    // Limpia el vector
+    registros.clear();
 }

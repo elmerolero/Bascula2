@@ -18,6 +18,9 @@ class Widget
         // Carga la interfaz indicando donde se encuentra el archivo
         void cargarWidget( std::string archivo );
 
+        // Establece el icon de la aplicacion
+        void establecerIconoVentana( std::string idVentana, std::string archivo );
+
         // Conecta un evento al elemento e indica una función que ejecutará
         void conectarSenal( std::string id, std::string tipoSenal, GCallback funcion, gpointer data );
 

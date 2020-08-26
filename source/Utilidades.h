@@ -7,6 +7,7 @@
 
 struct Row
 {
+	std::vector< std::string >columnas;
 	std::vector< std::string >campos;
 };
 
@@ -25,5 +26,8 @@ int obtenerEntero( std::string );
 
 // Convierte el texto de minusculas a mayusculas
 void insert_text_handler( GtkEditable *editable, const gchar *text, gint length, gint *position, gpointer data );
+
+// Reemplaza el tipo de placas
+std::string quitarComa( std::string str );
 
 #endif

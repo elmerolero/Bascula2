@@ -1,0 +1,17 @@
+--------------------------------------------
+                 C A A B S A
+               REPORTE GENERAL
+--------------------------------------------
+         * PLANTA TRANSFERENCIA *
+
+FECHA: 2020-08-17            HORA: 23:30:23
+
+      No especificado.:       0 Kg   0 Tick.
+          CAABSA EAGLE:   44212 Kg   4 Tick.
+            PARTICULAR:    6696 Kg   2 Tick.
+   H. AYUNTAMIENTO GDL:   18046 Kg   1 Tick.
+     CAABSA TLAJOMULCO:    1074 Kg   1 Tick.
+H. AYUNTAMIENTO GDL R8:       0 Kg   0 Tick.
+--------------------------------------------
+TOTAL:                    70028Kg   8 TICK.
+-------------------------------------------
